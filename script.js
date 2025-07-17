@@ -34,7 +34,7 @@ fetch(API_URL)
     });
   });
 
-form.addEventListener("submit", (e) => {
+form.addEventListener("submit", async (e) => {
   e.preventDefault();
   const nombre = nombreInput.value;
   const celular = celularInput.value;
@@ -46,11 +46,18 @@ form.addEventListener("submit", (e) => {
     return;
   }
 
+  // Enviar a WhatsApp
   const url = `https://wa.me/542235931151?text=Ya reservé mi turno para el ${dia} a las ${hora}. Mi nombre es ${nombre} y mi número es ${celular}`;
   window.open(url, "_blank");
 
-  const submitURL = "https://script.google.com/macros/s/AKfycbwUJaNzSQOiQPxv519cl91202q5U_lBnMqDdkUAru9Kn36amQmq04Xs9gJbmNS5zQ4/exec";
-  fetch(submitURL + `?dia=${encodeURIComponent(dia)}&hora=${encodeURIComponent(hora)}&nombre=${encodeURIComponent(nombre)}&celular=${encodeURIComponent(celular)}`);
+  // Enviar a Google Sheets (POST)
+  await fetch(API_URL, {
+    method: "POST",
+    body: JSON.stringify({ dia, hora, nombre, celular }),
+    headers: {
+      "Content-Type": "application/json"
+    }
+  });
 });
 
 function generarDiasDisponibles() {
